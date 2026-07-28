@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso FAACEF · Verificação</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #e8e4f0;
+            background: linear-gradient(135deg, #e0d9ed 0%, #cdc4e6 100%);
+            padding: 1.5rem;
+        }
+
+        /* ===== CARD PRINCIPAL ===== */
+        .card {
+            max-width: 520px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 2.5rem;
+            padding: 3rem 2.8rem 2.8rem;
+            box-shadow: 0 25px 50px -12px rgba(80, 50, 150, 0.25), 0 4px 18px 0 rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* ===== TÍTULOS ===== */
+        .header-wrapper {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #2d1f4a;
+            text-align: center;
+            background: linear-gradient(135deg, #6d4b9e, #4a2d7a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b5f7e;
+            font-size: 1rem;
+            font-weight: 400;
+            margin-top: 0.3rem;
+            margin-bottom: 2.2rem;
+        }
+
+        /* ===== CAMPOS DO CÓDIGO ===== */
+        .input-group {
+            margin-bottom: 0.5rem;
+        }
+
+        .input-label {
+            display: block;
+            color: #3d2d5a;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.9rem;
+            letter-spacing: 0.2px;
+        }
+
+        .code-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .code-input {
+            width: 72px;
+            height: 84px;
+            background: #f6f3fc;
+            border: 2.5px solid #d6cee6;
+            border-radius: 1.2rem;
+            text-align: center;
+            font-size: 2.6rem;
+            font-weight: 700;
+            color: #2d1f4a;
+            transition: all 0.2s;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.03);
+            caret-color: #6d4b9e;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #7a5bb5;
+            background: #faf8ff;
+            box-shadow: 0 0 0 4px rgba(109, 75, 158, 0.12), inset 0 2px 6px rgba(0, 0, 0, 0.02);
+            transform: translateY(-2px);
+        }
+
+        .code-input.filled {
+            border-color: #7a5bb5;
+            background: #f3edff;
+            box-shadow: 0 0 0 2px rgba(109, 75, 158, 0.08);
+        }
+
+        .hint {
+            text-align: center;
+            color: #9a8baf;
+            font-size: 0.85rem;
+            margin-top: 0.9rem;
+        }
+
+        /* ===== BOTÃO ===== */
+        .btn-container {
+            text-align: center;
+            margin-top: 2.4rem;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #6d4b9e 0%, #4a2d7a 100%);
+            border: none;
+            padding: 1.1rem 2.4rem;
+            width: 100%;
+            max-width: 300px;
+            border-radius: 3rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            color: #ffffff;
+            box-shadow: 0 12px 28px -8px rgba(74, 45, 122, 0.35);
+            cursor: pointer;
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 36px -10px rgba(74, 45, 122, 0.45);
+            background: linear-gradient(135deg, #7a5bb5 0%, #55378a 100%);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: translateY(0px);
+            box-shadow: 0 6px 16px -4px rgba(74, 45, 122, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 12px -4px rgba(74, 45, 122, 0.15);
+        }
+
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== MENSAGENS ===== */
+        .message {
+            text-align: center;
+            margin-top: 1.2rem;
+            padding: 0.8rem 1.2rem;
+            border-radius: 1rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .message.show {
+            opacity: 1;
+        }
+
+        .error {
+            color: #b33a4a;
+            background: #fdf0f2;
+            border: 1px solid #f5d6db;
+        }
+
+        .success {
+            color: #1f8b6a;
+            background: #edf9f3;
+            border: 1px solid #b8e0d0;
+        }
+
+        /* ===== RODAPÉ ===== */
+        .footer {
+            text-align: center;
+            color: #b0a4c0;
+            font-size: 0.8rem;
+            margin-top: 2.2rem;
+            letter-spacing: 0.3px;
+            border-top: 1px solid #ede8f5;
+            padding-top: 1.8rem;
+        }
+
+        /* ===== RESPONSIVO ===== */
+        @media (max-width: 540px) {
+            .card {
+                padding: 2rem 1.5rem 2rem;
+                border-radius: 2rem;
+            }
+            .code-input {
+                width: 60px;
+                height: 70px;
+                font-size: 2.2rem;
+            }
+            .code-grid {
+                gap: 0.9rem;
+            }
+            .title {
+                font-size: 1.8rem;
+            }
+            .submit-btn {
+                font-size: 0.95rem;
+                padding: 1rem 1.5rem;
+                max-width: 260px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .card {
+                padding: 1.5rem 1rem;
+            }
+            .code-input {
+                width: 50px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+            .code-grid {
+                gap: 0.6rem;
+            }
+            .title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <!-- CABEÇALHO -->
+        <div class="header-wrapper">
+            <h1 class="title">Verificação de Acesso</h1>
+        </div>
+        <p class="subtitle">Digite o código de 4 dígitos para continuar</p>
+
+        <!-- CAMPOS -->
+        <div class="input-group">
+            <label class="input-label">
+                <i class="fas fa-shield-alt" style="margin-right: 10px; color: #6d4b9e;"></i>
+                Código de acesso
+            </label>
+            <div class="code-grid" id="codeGrid">
+                <input type="text" class="code-input" maxlength="1" data-index="0" inputmode="numeric" autofocus>
+                <input type="text" class="code-input" maxlength="1" data-index="1" inputmode="numeric">
+                <input type="text" class="code-input" maxlength="1" data-index="2" inputmode="numeric">
+                <input type="text" class="code-input" maxlength="1" data-index="3" inputmode="numeric">
+            </div>
+            <p class="hint"><i class="fas fa-asterisk" style="font-size: 0.6rem; vertical-align: middle; margin-right: 6px; color: #b0a4c0;"></i>Utilize apenas números de 0 a 9</p>
+        </div>
+
+        <!-- MENSAGENS -->
+        <div class="message error" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i> Código inválido. Verifique e tente novamente.
+        </div>
+        <div class="message success" id="successMessage">
+            <i class="fas fa-check-circle"></i> Código verificado! Redirecionando…
+        </div>
+
+        <!-- BOTÃO -->
+        <div class="btn-container">
+            <button class="submit-btn" id="submitBtn" disabled>
+                <span>ACESSAR SISTEMA</span>
+                <div class="loading" id="loadingSpinner"></div>
+            </button>
+        </div>
+
+        <div class="footer">
+            <i class="fas fa-lock" style="margin-right: 6px; opacity: 0.5;"></i>
+            FAACEF · Ambiente seguro
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ===== MAPA DE REDIRECIONAMENTO =====
+            const redirectMap = {
+                "7124": "token870HhGzVwWnBh202hhH5.html"
+            };
+
+            // ===== DOM =====
+            const inputs = document.querySelectorAll('.code-input');
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMsg = document.getElementById('errorMessage');
+            const successMsg = document.getElementById('successMessage');
+            const loadingSpin = document.getElementById('loadingSpinner');
+
+            // ===== FUNÇÕES =====
+            function getCode() {
+                let code = '';
+                inputs.forEach(inp => code += inp.value);
+                return code;
+            }
+
+            function allFilled() {
+                let filled = true;
+                inputs.forEach(inp => {
+                    if (inp.value === '') filled = false;
+                    inp.classList.toggle('filled', inp.value !== '');
+                });
+                return filled;
+            }
+
+            function updateButton() {
+                submitBtn.disabled = !allFilled();
+            }
+
+            function resetMessages() {
+                errorMsg.classList.remove('show');
+                successMsg.classList.remove('show');
+            }
+
+            function resetButtonState() {
+                submitBtn.innerHTML = '<span>ACESSAR SISTEMA</span><div class="loading" id="loadingSpinner"></div>';
+                loadingSpin.style.display = 'none';
+                submitBtn.disabled = !allFilled();
+            }
+
+            function processCode() {
+                const code = getCode();
+                resetMessages();
+
+                // loading
+                submitBtn.innerHTML = '<div class="loading" id="loadingSpinner"></div>';
+                loadingSpin.style.display = 'block';
+                submitBtn.disabled = true;
+
+                setTimeout(() => {
+                    if (redirectMap[code]) {
+                        successMsg.classList.add('show');
+                        setTimeout(() => {
+                            window.location.href = redirectMap[code];
+                        }, 1400);
+                    } else {
+                        errorMsg.classList.add('show');
+                        resetButtonState();
+                        // feedback visual nos campos
+                        inputs.forEach(inp => {
+                            inp.style.borderColor = '#b33a4a';
+                            inp.style.background = '#fdf0f2';
+                            setTimeout(() => {
+                                inp.style.borderColor = '';
+                                inp.style.background = '';
+                            }, 500);
+                        });
+                    }
+                }, 800);
+            }
+
+            // ===== EVENTOS =====
+            inputs.forEach((input, idx) => {
+                input.addEventListener('input', (e) => {
+                    // apenas números
+                    input.value = input.value.replace(/\D/g, '');
+                    resetMessages();
+
+                    if (input.value !== '') {
+                        input.classList.add('filled');
+                        if (idx < inputs.length - 1) {
+                            inputs[idx + 1].focus();
+                        }
+                    } else {
+                        input.classList.remove('filled');
+                    }
+                    updateButton();
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && input.value === '' && idx > 0) {
+                        inputs[idx - 1].focus();
+                    } else if (e.key === 'ArrowLeft' && idx > 0) {
+                        inputs[idx - 1].focus();
+                        e.preventDefault();
+                    } else if (e.key === 'ArrowRight' && idx < inputs.length - 1) {
+                        inputs[idx + 1].focus();
+                        e.preventDefault();
+                    } else if (e.key === 'Enter' && !submitBtn.disabled) {
+                        processCode();
+                        e.preventDefault();
+                    }
+                });
+            });
+
+            submitBtn.addEventListener('click', processCode);
+
+            // ===== INICIALIZA =====
+            updateButton();
+            // foco automático no primeiro campo
+            if (inputs.length) inputs[0].focus();
+        })();
+    </script>
+</body>
+</html>
